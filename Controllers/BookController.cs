@@ -41,6 +41,47 @@ namespace REST_API_TEMPLATE.Controllers
             return StatusCode(StatusCodes.Status200OK, book);
         }
 
+        [HttpGet("/{genreName}")]
+        public async Task<IActionResult> GetBooksByGenre(string genreName)
+        {
+            var books = await _libraryService.GetBooksAsync();
+
+            if (books == null)
+            {
+                return StatusCode(StatusCodes.Status204NoContent, "No book found in database.");
+            }
+
+            var filteredBooks = books.Where(book => book.Genre.ToString() == genreName);
+
+            if (!filteredBooks.Any())
+            {
+                return StatusCode(StatusCodes.Status204NoContent, $"No books found for genre: {genreName}");
+            }
+
+                return StatusCode(StatusCodes.Status200OK, filteredBooks);
+        }
+
+        [HttpGet("api/Books/{author}")]
+        public async Task<IActionResult> GetBooksByAuthor(string author)
+        {
+            var books = await _libraryService.GetBooksAsync();
+
+            if (books == null)
+            {
+                return StatusCode(StatusCodes.Status204NoContent, "No books found.");
+            }
+
+            var filteredBooks = books.Where(book => book.Author.ToString() == author).ToList();
+
+            if (!filteredBooks.Any())
+            {
+                return StatusCode(StatusCodes.Status204NoContent, $"No books found for the year {author}.");
+            }
+
+            return StatusCode(StatusCodes.Status200OK, filteredBooks);
+        }
+        
+         
 
         [HttpPost]
         public async Task<ActionResult<Book>> AddBook(Book book)
